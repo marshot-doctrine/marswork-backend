@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { PrismaConfigType } from './common';
@@ -21,5 +21,6 @@ import { PrismaModule } from './prisma';
       isGlobal: true,
     }),
   ],
+  providers: [Logger],
 })
 export class AppModule {}
