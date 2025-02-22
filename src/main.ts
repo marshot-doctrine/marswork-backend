@@ -1,11 +1,12 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { SwaggerModule } from '@nestjs/swagger';
 
+import * as cookieParser from 'cookie-parser';
 // import * as expressBasicAuth from 'express-basic-auth';
 
-import { HttpExceptionFilter } from './common';
+import { HttpExceptionFilter, SuccessInterceptor } from './common';
 import { corsConfig, swaggerConfig } from './configs';
 import { API_URL, APP } from './constants';
 
@@ -42,8 +43,13 @@ class Application {
 
   private async setUpGlobalMiddleware() {
     this.app.enableCors(corsConfig(this.DEV_MODE));
+
+    this.app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    this.app.useGlobalInterceptors(new SuccessInterceptor());
     this.app.useGlobalFilters(new HttpExceptionFilter());
+
     this.setUpOpenAPI();
+    this.app.use(cookieParser(process.env.COOKIE_SECRET));
   }
 
   async bootstrap() {
