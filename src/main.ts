@@ -5,9 +5,11 @@ import { SwaggerModule } from '@nestjs/swagger';
 
 // import * as expressBasicAuth from 'express-basic-auth';
 
-import { AppModule } from './app.module';
-import { API_URL, APP } from './constants';
+import { HttpExceptionFilter } from './common';
 import { corsConfig, swaggerConfig } from './configs';
+import { API_URL, APP } from './constants';
+
+import { AppModule } from './app.module';
 
 class Application {
   private logger = new Logger(Application.name);
@@ -40,6 +42,7 @@ class Application {
 
   private async setUpGlobalMiddleware() {
     this.app.enableCors(corsConfig(this.DEV_MODE));
+    this.app.useGlobalFilters(new HttpExceptionFilter());
     this.setUpOpenAPI();
   }
 
