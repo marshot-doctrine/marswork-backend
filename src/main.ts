@@ -9,6 +9,7 @@ import * as cookieParser from 'cookie-parser';
 import {
   CustomLoggerService,
   HttpExceptionFilter,
+  PrismaClientExceptionFilter,
   SuccessInterceptor,
 } from './common';
 import { corsConfig, swaggerConfig } from './configs';
@@ -48,9 +49,18 @@ class Application {
   private async setUpGlobalMiddleware() {
     this.app.enableCors(corsConfig(this.DEV_MODE));
 
-    this.app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    this.app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }),
+    );
     this.app.useGlobalInterceptors(new SuccessInterceptor());
-    this.app.useGlobalFilters(new HttpExceptionFilter());
+    this.app.useGlobalFilters(
+      new HttpExceptionFilter(),
+      new PrismaClientExceptionFilter(),
+    );
 
     this.setUpOpenAPI();
     this.app.use(cookieParser(process.env.COOKIE_SECRET));
