@@ -1,1 +1,2 @@
-export * from './swagger';
+export * from './cors.config';
+export * from './swagger.config';
